@@ -1,0 +1,37 @@
+{
+  "name": "aastu-gibigubae-resource-app-backend",
+  "version": "1.0.0",
+  "description": "Express + TypeScript REST API powering the AASTU Gibi Gubae freshman course resource app.",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aastu-gibigubae/aastu-gibigubae-resource-app-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aastu-gibigubae/aastu-gibigubae-resource-app-backend/issues"
+  },
+  "homepage": "https://github.com/aastu-gibigubae/aastu-gibigubae-resource-app-backend#readme",
+  "dependencies": {
+    "@prisma/client": "^7.9.1",
+    "express": "^5.2.1",
+    "prisma": "^7.9.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.2.0",
+    "dotenv": "^17.4.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^7.0.2"
+  }
+}

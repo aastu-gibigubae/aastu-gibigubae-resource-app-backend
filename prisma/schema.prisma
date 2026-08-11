@@ -1,0 +1,334 @@
+// ============================================================
+// Freshman Course Resource Hub — Prisma Schema
+// Companion to: SRS_Resource_App_Backend_v1.md, BACKEND_ARCHITECTURE.md,
+//               DATABASE_SCHEMA_DESIGN.md
+// Database: PostgreSQL (Neon)
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ------------------------------------------------------------
+// Enums
+// ------------------------------------------------------------
+
+enum Role {
+  student
+  admin
+}
+
+enum SubscriptionStatus {
+  none
+  active
+  expired
+}
+
+enum ActivationStatus {
+  pending
+  activated
+}
+
+enum ResourceCategory {
+  test
+  midterm
+  final
+  ppt
+  module
+  handout
+}
+
+enum PaymentStatus {
+  pending
+  approved
+  rejected
+}
+
+enum DeviceStatus {
+  active
+  revoked
+}
+
+enum IssueReason {
+  broken_file
+  wrong_file
+  incorrect_category
+  poor_quality
+  other
+}
+
+enum IssueStatus {
+  pending
+  addressed
+}
+
+// Closed set, explicit in SRS Section on Notification
+enum NotificationType {
+  premium_approved
+  issue_report_addressed
+  subscription_expiring
+}
+
+// ============================================================
+// auth / users module
+// ============================================================
+
+model User {
+  id           Int    @id @default(autoincrement())
+  name         String
+  email        String @unique
+  passwordHash String @map("password_hash")
+
+  role                   Role               @default(student)
+  subscriptionStatus     SubscriptionStatus @default(none) @map("subscription_status")
+  subscriptionExpiryDate DateTime?          @map("subscription_expiry_date")
+  activationStatus       ActivationStatus   @default(pending) @map("activation_status")
+  lastDeviceFingerprint  String?            @map("last_device_fingerprint")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at") // soft delete — Section 13
+
+  // back-relations (Section 7 FK table)
+  refreshTokens      RefreshToken[]
+  uploadedResources   Resource[]         @relation("ResourceUploadedBy")
+  paymentSubmissions  PaymentSubmission[] @relation("PaymentUser")
+  reviewedPayments    PaymentSubmission[] @relation("PaymentReviewedBy")
+  deviceRecords       DeviceRecord[]     @relation("DeviceUser")
+  activatedDevices    DeviceRecord[]     @relation("DeviceActivatedBy")
+  revokedDevices      DeviceRecord[]     @relation("DeviceRevokedBy")
+  issueReportsFiled   IssueReport[]      @relation("IssueReporter")
+  notifications       Notification[]
+  adminActionLogs     AdminActionLog[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id     Int  @id @default(autoincrement())
+  userId Int  @map("user_id")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash         String  @unique @map("token_hash")
+  deviceFingerprint String? @map("device_fingerprint")
+
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// ============================================================
+// catalog module — Stream / Department / Course / Resource
+// ------------------------------------------------------------
+// Stream, Department, Course: hard delete, RESTRICT — no deleted_at.
+// (Rarely touched, cheap to recreate, already protected by RESTRICT.
+// Bulk-delete-with-children is application logic, not CASCADE — see
+// the delete-flow discussion for why CASCADE is wrong here.)
+// ============================================================
+
+model Stream {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  departments Department[]
+
+  @@map("streams")
+}
+
+model Department {
+  id       Int    @id @default(autoincrement())
+  streamId Int    @map("stream_id")
+  stream   Stream @relation(fields: [streamId], references: [id], onDelete: Restrict)
+
+  name String
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  courses Course[]
+
+  @@unique([streamId, name])
+  @@index([streamId])
+  @@map("departments")
+}
+
+model Course {
+  id           Int        @id @default(autoincrement())
+  departmentId Int        @map("department_id")
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+
+  // Deliberately no stream_id here — see Section 5 note (3NF: Department
+  // already implies Stream; storing both risks silent disagreement).
+  academicYear Int    @map("academic_year") // CHECK (1-5) added via raw SQL migration
+  name         String
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  resources Resource[]
+
+  @@unique([departmentId, academicYear, name])
+  @@index([departmentId])
+  @@map("courses")
+}
+
+model Resource {
+  id       Int    @id @default(autoincrement())
+  courseId Int    @map("course_id")
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Restrict)
+
+  category    ResourceCategory
+  title       String
+  description String?
+  fileUrl     String           @map("file_url")
+  fileSizeBytes Int            @map("file_size_bytes") // CHECK (<= 2097152) via raw SQL migration
+  checksum    String
+
+  isFreeSample Boolean @default(false) @map("is_free_sample")
+  // Max 2 per (course_id, category) — application-enforced, not a DB
+  // constraint (a plain UNIQUE can only express "at most 1" — see Section 5).
+
+  uploadedByAdminId Int  @map("uploaded_by_admin_id")
+  uploadedByAdmin   User @relation("ResourceUploadedBy", fields: [uploadedByAdminId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at") // soft delete
+
+  issueReports  IssueReport[]
+  notifications Notification[]
+
+  @@index([courseId, category])
+  @@map("resources")
+}
+
+// ============================================================
+// premium module
+// ============================================================
+
+model PaymentSubmission {
+  id     Int  @id @default(autoincrement())
+  userId Int  @map("user_id")
+  user   User @relation("PaymentUser", fields: [userId], references: [id], onDelete: Restrict)
+
+  status PaymentStatus // full enum kept for future flexibility; v1 only ever writes 'approved'
+  note   String?
+
+  reviewedByAdminId Int      @map("reviewed_by_admin_id")
+  reviewedByAdmin   User     @relation("PaymentReviewedBy", fields: [reviewedByAdminId], references: [id], onDelete: Restrict)
+  reviewedAt        DateTime @map("reviewed_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("payment_submissions")
+}
+
+// ============================================================
+// device module
+// ------------------------------------------------------------
+// Partial unique index (one active device per user) added via raw SQL
+// migration — Prisma's schema syntax has no WHERE-conditioned @@unique.
+// ============================================================
+
+model DeviceRecord {
+  id     Int  @id @default(autoincrement())
+  userId Int  @map("user_id")
+  user   User @relation("DeviceUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  deviceFingerprint String       @map("device_fingerprint")
+  status            DeviceStatus @default(active)
+
+  activatedAt DateTime @map("activated_at")
+
+  activatedByAdminId Int  @map("activated_by_admin_id")
+  activatedByAdmin   User @relation("DeviceActivatedBy", fields: [activatedByAdminId], references: [id], onDelete: Restrict)
+
+  revokedAt DateTime? @map("revoked_at")
+
+  revokedByAdminId Int?  @map("revoked_by_admin_id")
+  revokedByAdmin   User? @relation("DeviceRevokedBy", fields: [revokedByAdminId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@map("device_records")
+}
+
+// ============================================================
+// issues module
+// ------------------------------------------------------------
+// Partial unique index (one open report per student per resource)
+// added via raw SQL migration, same reason as DeviceRecord above.
+// ============================================================
+
+model IssueReport {
+  id         Int      @id @default(autoincrement())
+  resourceId Int      @map("resource_id")
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  reporterId Int  @map("reporter_id")
+  reporter   User @relation("IssueReporter", fields: [reporterId], references: [id], onDelete: Restrict)
+
+  reason    IssueReason
+  otherText String?     @map("other_text")
+  status    IssueStatus @default(pending)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([resourceId])
+  @@index([reporterId])
+  @@map("issue_reports")
+}
+
+// ============================================================
+// notifications module
+// ============================================================
+
+model Notification {
+  id     Int  @id @default(autoincrement())
+  userId Int  @map("user_id")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type    NotificationType
+  message String           // denormalized rendered text — kept even if template wording later changes
+
+  relatedResourceId Int?      @map("related_resource_id")
+  relatedResource    Resource? @relation(fields: [relatedResourceId], references: [id], onDelete: SetNull)
+
+  readStatus Boolean @default(false) @map("read_status")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId, readStatus])
+  @@map("notifications")
+}
+
+// ============================================================
+// infrastructure / audit module
+// ------------------------------------------------------------
+// target_id deliberately has NO foreign key — polymorphic reference,
+// must survive even after the referenced row is gone. See Section 5.
+// It's Int (not String) now that every table's PK is Int too.
+// ============================================================
+
+model AdminActionLog {
+  id      Int  @id @default(autoincrement())
+  adminId Int  @map("admin_id")
+  admin   User @relation(fields: [adminId], references: [id], onDelete: Restrict)
+
+  actionType String @map("action_type") // deliberately a plain String, not an enum — grows over time
+  targetType String @map("target_type") // e.g. "User", "Resource", "DeviceRecord"
+  targetId   Int    @map("target_id")   // NOT a FK — see note above
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([adminId])
+  @@index([createdAt])
+  @@map("admin_action_logs")
+}
