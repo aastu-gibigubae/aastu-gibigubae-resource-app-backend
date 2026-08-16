@@ -1,49 +1,16 @@
-# --- Dependencies ---
-# Regenerable from package.json + package-lock.json via `npm install`.
-# This folder alone can be hundreds of MB — never, ever committed.
 node_modules/
 
 # --- Build output ---
-# Regenerable from src/ via `npm run build`. Compiled JS is a derived
-# artifact, not source — committing it means the repo tracks two
-# copies of the same logic that can silently drift out of sync.
 dist/
 
-# --- Environment variables / secrets ---
-# .env holds real credentials (your Neon password, JWT secrets, R2 keys).
-# .env.example (the template, no real values) is the opposite — that
-# one SHOULD be committed, which is why it's not listed here.
+
 .env
 .env.local
 .env.*.local
 
-# --- Logs ---
-# Runtime output, not source code. Regenerated every time the app runs.
 *.log
 npm-debug.log*
 
-# --- TypeScript build cache ---
-# TS incremental build info — a cache file TypeScript uses to speed up
-# repeated compiles. Purely a local performance artifact, meaningless
-# to anyone else, regenerated automatically.
-*.tsbuildinfo
-
-# --- OS-generated files ---
-# macOS Finder metadata / Windows thumbnail cache. Nobody wants these
-# in a repo; they're not even related to your project, just your OS.
-.DS_Store
-Thumbs.db
-
-# --- Editor/IDE-specific files ---
-# Personal editor settings (your specific extensions, window layout).
-# Deliberately NOT .vscode/ entirely — some teams DO commit a shared
-# .vscode/settings.json (e.g. enforced formatter settings) on purpose.
-# Since that's a team decision, not a "should," I'm leaving .vscode/
-# out of this file for now — ask Lelisa/your team leader if you want
-# to standardize editor settings later.
-*.swp
-*.swo
 
 # --- Test coverage output ---
-# Regenerated every time you run tests with coverage enabled.
 coverage/

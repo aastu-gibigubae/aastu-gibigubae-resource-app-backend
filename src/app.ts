@@ -1,4 +1,7 @@
 import express from 'express';
+import { authRouter } from './modules/auth/auth.router.js';
+import { userRouter } from './modules/users/user.router.js';
+import { errorHandler, notFoundHandler } from './shared/middleware/error-handler.js';
 
 const app = express();
 
@@ -8,7 +11,10 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-// module routers get mounted here as each module is built, e.g.:
-// app.use('/auth', authRouter);
+app.use('/auth', authRouter);
+app.use('/users', userRouter);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;

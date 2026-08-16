@@ -37,34 +37,40 @@ Express + TypeScript REST API powering the AASTU Gibi Gubae freshman course reso
 
 ## Project Structure
 ```
-src/
-app.ts # Configured Express app (middleware + routers, no .listen())
-server.ts # Starts the HTTP server + scheduled jobs
-modules/ # One folder per business domain
-auth/ # Login, signup, token issuance/refresh
-users/ # Core User entity (no routes — internal only)
-catalog/ # Stream/Department/Course/Resource + browse/access logic
-premium/ # Manual payment approval flow
-device/ # Device fingerprint activation/revocation
-issues/ # Resource issue reporting
-notifications/ # In-app notifications
-infrastructure/ # Cross-cutting technical concerns
-database/ # Prisma client singleton
-storage/ # Cloudflare R2 client
-security/ # JWT signing/verification, password hashing
-audit/ # Admin action logging
-shared/ # Reusable code with no business logic of its own
-middleware/ # Auth guards, upload handling, error handling, rate limiting
-errors/ # Typed application error classes
-types/ # Shared TypeScript types (e.g. Express request augmentation)
-validation/ # Reusable validation schemas
-utils/ # Small helpers with no dependencies on modules/
-jobs/ # Scheduled background tasks
-config/ # Environment validation, app-wide constants
 prisma/
-schema.prisma
+src/
+├── app.ts                  # Configured Express app (middleware + routers, no .listen())
+├── server.ts               # Entry point: Starts HTTP server + initiates background jobs
+│
+├── modules/                # Domain-Driven Core (One folder per business capability)
+│   ├── auth/               # Login, signup, session tokens & refresh issuance
+│   ├── users/              # Core User domain (Internal service contracts only — no public routes)
+│   ├── catalog/            # Streams, Departments, Courses, Resources & browsing controllers
+│   ├── premium/            # Manual payment verification & administrative approval pipelines
+│   ├── device/             # Hardware fingerprint bindings, device activations & revocations
+│   ├── issues/             # User resource issue reporting & moderation tracking
+│   └── notifications/      # Real-time state & internal web event updates
+│
+├── infrastructure/         # External System Adapters & Low-Level Modules
+│   ├── database/           # Global Prisma Client engine singleton wrapper
+│   ├── storage/            # Cloudflare R2 object bucket API connectors
+│   ├── security/           # Token signatures, cryptographic validation & crypt-hashing
+│   └── audit/              # Immutable admin lifecycle action logs
+│
+├── shared/                 # Business-Agnostic Core Reusable Primitives
+│   ├── middleware/         # Identity guards, multer storage, global catch-alls & rate-limiters
+│   ├── errors/             # Custom subclassed error tracking models
+│   ├── types/              # Type extensions (e.g., Request context modifications)
+│   ├── validation/         # Shared Zod data integrity structural schemas
+│   └── utils/              # Pure algorithmic helper utilities
+│
+└── config/                 # Strong-typed runtime environment schemas & unchanging constants
+│
+prisma/
+└── schema.prisma           # Core data relationship graph definition map
+│
 tests/
-integration/
+└── integration/            # Full-stack network controller integration pipelines
 ```
 
 ## Available Scripts
@@ -86,3 +92,18 @@ integration/
 ## Environment Variables
 
 See `.env.example` for the full list of required variables and what each one is for.
+
+## Authentication API
+
+All authenticated requests use `Authorization: Bearer <accessToken>`.
+
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/auth/signup` | Create a student account with `name`, `email`, `phone`, and `password` |
+| `POST` | `/auth/login` | Exchange email and password for access and refresh tokens |
+| `POST` | `/auth/refresh` | Rotate a refresh token |
+| `POST` | `/auth/logout` | Revoke a refresh token |
+| `GET` | `/users/me` | Read the signed-in user's profile |
+| `PATCH` | `/users/me` | Update `name` and/or `phone` |
+
+Phone numbers are stored in normalized E.164 format. Ethiopian local mobile input such as `0912345678` is normalized to `+251912345678`.
