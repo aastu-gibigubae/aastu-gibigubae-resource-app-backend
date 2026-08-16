@@ -4,12 +4,14 @@ import { authenticate } from '../auth/auth.middleware.js';
 import { phoneSchema } from '../auth/auth.validation.js';
 import { findActiveUserById, updateActiveUser } from './user.service.js';
 
-const updateProfileSchema = z.object({
-  name: z.string().trim().min(2).max(100).optional(),
-  phone: phoneSchema.optional(),
-}).refine((value) => value.name !== undefined || value.phone !== undefined, {
-  message: 'Provide at least one field to update',
-});
+const updateProfileSchema = z
+  .object({
+    name: z.string().trim().min(2).max(100).optional(),
+    phone: phoneSchema.optional(),
+  })
+  .refine((value) => value.name !== undefined || value.phone !== undefined, {
+    message: 'Provide at least one field to update',
+  });
 
 export const userRouter = Router();
 
@@ -18,7 +20,9 @@ userRouter.use(authenticate);
 userRouter.get('/me', async (req, res, next) => {
   try {
     res.json({ user: await findActiveUserById(req.auth!.userId) });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 });
 
 userRouter.patch('/me', async (req, res, next) => {
@@ -29,5 +33,7 @@ userRouter.patch('/me', async (req, res, next) => {
       ...(input.phone === undefined ? {} : { phone: input.phone }),
     };
     res.json({ user: await updateActiveUser(req.auth!.userId, data) });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 });
