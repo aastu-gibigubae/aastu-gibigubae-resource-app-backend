@@ -4,11 +4,8 @@
   "description": "Express + TypeScript REST API powering the AASTU Gibi Gubae freshman course resource app.",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "lint": "eslint \"src/**/*.ts\"",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\"",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
@@ -20,32 +17,21 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
+  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/aastu-gibigubae/aastu-gibigubae-resource-app-backend/issues"
   },
   "homepage": "https://github.com/aastu-gibigubae/aastu-gibigubae-resource-app-backend#readme",
   "dependencies": {
-    "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
-    "bcryptjs": "^3.0.3",
-    "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "pg": "^8.23.0",
-    "prisma": "^7.9.1",
-    "zod": "^4.4.3"
+    "prisma": "^7.9.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.2.0",
-    "@types/pg": "^8.21.0",
-    "oxlint": "^1.78.0",
-    "oxlint-tsgolint": "^7.0.2001",
-    "prettier": "^3.9.6",
+    "dotenv": "^17.4.2",
     "ts-node-dev": "^2.0.0",
-    "tsx": "^4.23.12",
     "typescript": "^7.0.2"
   }
 }
