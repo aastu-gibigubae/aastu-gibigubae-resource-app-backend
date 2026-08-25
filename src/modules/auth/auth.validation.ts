@@ -15,13 +15,19 @@ export const signupSchema = z.object({
 
 // SRS §8.5 login request: { email, password, device_fingerprint } — all
 // three required, unlike signup which has no fingerprint field at all.
+// snake_case keys, matching the actual wire format — this was
+// previously camelCase (deviceFingerprint), which meant a real client
+// sending the documented body would always fail validation, since
+// req.body genuinely has device_fingerprint, not deviceFingerprint.
+// auth.controller.ts maps this to auth.service's camelCase LoginInput.
 export const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
-  deviceFingerprint: z.string().min(1, 'Device fingerprint is required'),
+  device_fingerprint: z.string().min(1, 'Device fingerprint is required'),
 });
 
-// SRS §8.5 refresh request: { refresh_token }
+// SRS §8.5 refresh request: { refresh_token } — same snake_case fix as
+// above.
 export const refreshSchema = z.object({
-  refreshToken: z.string().min(1, 'Refresh token is required'),
+  refresh_token: z.string().min(1, 'Refresh token is required'),
 });
