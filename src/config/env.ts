@@ -13,15 +13,16 @@ const envSchema = z.object({
   JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET must be at least 32 characters'),
   JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters'),
 
-  // Not read by anything until the catalog module (Phase 3) actually
-  // uploads to R2 — kept optional here so the app can boot before that
-  // module exists. Tighten to required once infrastructure/storage/r2-client.ts
-  // is built.
-  R2_ACCOUNT_ID: z.string().optional(),
-  R2_ACCESS_KEY_ID: z.string().optional(),
-  R2_SECRET_ACCESS_KEY: z.string().optional(),
-  R2_BUCKET_NAME: z.string().optional(),
-  R2_PUBLIC_URL: z.string().url().optional(),
+  // r2-client.ts is now built and reads all five of these at import
+  // time (the S3Client is constructed once, module-level) — no longer
+  // optional. A missing value now fails loudly at boot, same as
+  // DATABASE_URL/JWT secrets above, rather than surfacing later as a
+  // confusing runtime error the first time someone uploads a file.
+  R2_ACCOUNT_ID: z.string().min(1, 'R2_ACCOUNT_ID is required'),
+  R2_ACCESS_KEY_ID: z.string().min(1, 'R2_ACCESS_KEY_ID is required'),
+  R2_SECRET_ACCESS_KEY: z.string().min(1, 'R2_SECRET_ACCESS_KEY is required'),
+  R2_BUCKET_NAME: z.string().min(1, 'R2_BUCKET_NAME is required'),
+  R2_PUBLIC_URL: z.string().url(),
 });
 
 const parsed = envSchema.safeParse(process.env);

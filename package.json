@@ -26,25 +26,29 @@
   },
   "homepage": "https://github.com/aastu-gibigubae/aastu-gibigubae-resource-app-backend#readme",
   "dependencies": {
-    "@prisma/client": "^7.9.1",
-    "express": "^5.2.1",
-    "prisma": "^7.9.1",
-    "bcryptjs": "^3.0.3",
-    "jsonwebtoken": "^9.0.3",
-    "zod": "^4.4.3",
+    "@aws-sdk/client-s3": "^3.1117.0",
     "@prisma/adapter-pg": "^7.9.1",
-    "pg": "^8.23.0"
+    "@prisma/client": "^7.9.1",
+    "bcryptjs": "^3.0.3",
+    "express": "^5.2.1",
+    "file-type": "^22.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "pg": "^8.23.0",
+    "prisma": "^7.9.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.2.0",
     "@types/node": "^26.2.0",
+    "@types/pg": "^8.23.1",
+    "@vitest/coverage-v8": "^3.2.4",
     "dotenv": "^17.4.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^7.0.2",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@vitest/coverage-v8": "^3.2.4",
-    "vitest": "^3.2.4",
-    "@types/pg": "^8.23.1"
+    "vitest": "^3.2.4"
   }
 }
