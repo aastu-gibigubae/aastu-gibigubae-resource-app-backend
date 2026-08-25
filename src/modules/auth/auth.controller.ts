@@ -35,7 +35,10 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   const input = loginSchema.parse(req.body);
-  const result = await authService.login(input, req.ip ?? 'unknown');
+  const result = await authService.login(
+    { email: input.email, password: input.password, deviceFingerprint: input.device_fingerprint },
+    req.ip ?? 'unknown',
+  );
 
   res.status(200).json({
     access_token: result.accessToken,
@@ -45,8 +48,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const refresh = async (req: Request, res: Response): Promise<void> => {
-  const { refreshToken } = refreshSchema.parse(req.body);
-  const tokens = await authService.refresh(refreshToken);
+  const { refresh_token } = refreshSchema.parse(req.body);
+  const tokens = await authService.refresh(refresh_token);
 
   res.status(200).json({
     access_token: tokens.accessToken,
