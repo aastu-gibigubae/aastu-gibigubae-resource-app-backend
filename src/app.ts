@@ -3,6 +3,7 @@ import { authRouter } from './modules/auth/auth.routes';
 import { deviceRouter } from './modules/device/device.routes';
 import { notificationsRouter } from './modules/notifications/notifications.routes';
 import { errorHandler } from './shared/middleware/error-handler';
+import { catalogRouter } from './modules/catalog/catalog.routes';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.get('/health', (_req, res) => {
 app.use(authRouter);
 app.use(deviceRouter);
 app.use(notificationsRouter);
+app.use(catalogRouter);
 
 // Must be mounted last, after every route — Express requires
 // error-handling middleware to be registered after everything it's
