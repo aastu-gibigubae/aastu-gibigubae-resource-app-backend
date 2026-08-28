@@ -90,10 +90,13 @@ describe('activateFromLastLogin', () => {
       activationStatus: 'activated',
     });
 
-    await deviceService.activateFromLastLogin(42, 1, fakeTx);
+    const result = await deviceService.activateFromLastLogin(42, 1, fakeTx);
 
     expect(deviceRepository.create).toHaveBeenCalledWith(42, 'fp_abc123', 1, fakeTx);
     expect(usersService.setActivationStatus).toHaveBeenCalledWith(42, 'activated', fakeTx);
+    // Returned so premium.service.grantPremium can include device_id
+    // in its response (SRS's exact documented shape).
+    expect(result).toEqual({ deviceId: mockDeviceRecord.id });
   });
 });
 
