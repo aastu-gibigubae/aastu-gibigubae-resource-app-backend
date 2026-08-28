@@ -511,3 +511,17 @@ export const search = async (
 
   return [...courseResults, ...resourceResults];
 };
+
+// For modules/issues/ — the architecture doc is explicit that issues
+// "reads (not writes) catalog's resource existence via catalog.service,
+// not its repository." A plain boolean, deliberately not the full
+// PublicResource shape — issues only ever needs to know "does this
+// resource exist" (to 404 before creating a report), it has no
+// business seeing file URLs, checksums, or any other resource detail.
+// Doesn't filter on anything beyond findResourceById's own
+// deletedAt: null (a report against a since-deleted resource correctly
+// 404s the same as one that never existed).
+export const resourceExists = async (resourceId: number): Promise<boolean> => {
+  const resource = await catalogRepository.findResourceById(resourceId);
+  return resource !== null;
+};
