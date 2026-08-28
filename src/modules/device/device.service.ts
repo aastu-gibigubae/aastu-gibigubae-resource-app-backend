@@ -43,7 +43,7 @@ export const activateFromLastLogin = async (
   targetUserId: number,
   adminId: number,
   tx: Prisma.TransactionClient,
-): Promise<void> => {
+): Promise<{ deviceId: number }> => {
   const targetUser = await usersService.findById(targetUserId);
 
   // SRS's exact documented error for grant-premium: 409 NO_DEVICE_ON_FILE
@@ -68,8 +68,13 @@ export const activateFromLastLogin = async (
     );
   }
 
-  await deviceRepository.create(targetUserId, targetUser.lastDeviceFingerprint, adminId, tx);
+  const device = await deviceRepository.create(targetUserId, targetUser.lastDeviceFingerprint, adminId, tx);
   await usersService.setActivationStatus(targetUserId, 'activated', tx);
+
+  // Returned so premium.service.grantPremium can include device_id in
+  // its response (SRS's exact documented shape for
+  // POST /admin/users/:id/grant-premium).
+  return { deviceId: device.id };
 };
 
 // For POST /admin/users/:id/revoke-device.
