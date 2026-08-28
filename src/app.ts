@@ -4,6 +4,7 @@ import { deviceRouter } from './modules/device/device.routes';
 import { notificationsRouter } from './modules/notifications/notifications.routes';
 import { errorHandler } from './shared/middleware/error-handler';
 import { catalogRouter } from './modules/catalog/catalog.routes';
+import { premiumRouter } from './modules/premium/premium.routes';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(authRouter);
 app.use(deviceRouter);
 app.use(notificationsRouter);
 app.use(catalogRouter);
+app.use(premiumRouter);
 
 // Must be mounted last, after every route — Express requires
 // error-handling middleware to be registered after everything it's
