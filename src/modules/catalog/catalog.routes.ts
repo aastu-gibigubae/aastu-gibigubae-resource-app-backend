@@ -21,7 +21,12 @@ catalogRouter.get(
 catalogRouter.get('/search', requireAuth, asyncHandler(catalogController.search));
 
 // ---- Admin CRUD ----
-catalogRouter.post('/admin/streams', requireAuth, requireAdmin, asyncHandler(catalogController.createStream));
+catalogRouter.post(
+  '/admin/streams',
+  requireAuth,
+  requireAdmin,
+  asyncHandler(catalogController.createStream),
+);
 catalogRouter.put(
   '/admin/streams/:id',
   requireAuth,
@@ -54,7 +59,12 @@ catalogRouter.delete(
   asyncHandler(catalogController.deleteDepartment),
 );
 
-catalogRouter.post('/admin/courses', requireAuth, requireAdmin, asyncHandler(catalogController.createCourse));
+catalogRouter.post(
+  '/admin/courses',
+  requireAuth,
+  requireAdmin,
+  asyncHandler(catalogController.createCourse),
+);
 catalogRouter.put(
   '/admin/courses/:id',
   requireAuth,

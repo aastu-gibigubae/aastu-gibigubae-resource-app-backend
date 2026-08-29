@@ -29,7 +29,10 @@ export const createReport = async (req: Request, res: Response): Promise<void> =
 export const listReports = async (req: Request, res: Response): Promise<void> => {
   const query = listReportsQuerySchema.parse(req.query);
 
-  const result = await issuesService.listReports(query.status, { page: query.page, limit: query.limit });
+  const result = await issuesService.listReports(query.status, {
+    page: query.page,
+    limit: query.limit,
+  });
 
   res.status(200).json({
     reports: result.reports.map(reportResponse),

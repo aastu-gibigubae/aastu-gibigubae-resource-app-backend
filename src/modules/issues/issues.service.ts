@@ -1,7 +1,11 @@
 import type { IssueReason, IssueStatus } from '@prisma/client';
 import { writeAuditLog } from '../../infrastructure/audit/audit-log';
 import { ConflictError, NotFoundError } from '../../shared/errors/app-errors';
-import { buildPaginationEnvelope, type PaginationEnvelope, type PageParams } from '../../shared/utils/paginate';
+import {
+  buildPaginationEnvelope,
+  type PaginationEnvelope,
+  type PageParams,
+} from '../../shared/utils/paginate';
 import * as catalogService from '../catalog/catalog.service';
 import * as notificationsService from '../notifications/notifications.service';
 import * as issuesRepository from './issues.repository';
@@ -44,7 +48,10 @@ export const createReport = async (
 
   const existingOpenReport = await issuesRepository.findOpenReport(resourceId, reporterId);
   if (existingOpenReport) {
-    throw new ConflictError('REPORT_ALREADY_OPEN', 'You already have an open report for this resource');
+    throw new ConflictError(
+      'REPORT_ALREADY_OPEN',
+      'You already have an open report for this resource',
+    );
   }
 
   const report = await issuesRepository.create({

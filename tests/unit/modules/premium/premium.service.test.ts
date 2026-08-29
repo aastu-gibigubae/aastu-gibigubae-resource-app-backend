@@ -58,7 +58,9 @@ describe('findUserByEmail', () => {
   it('throws USER_NOT_FOUND when no user matches the email', async () => {
     vi.mocked(usersService.findByEmail).mockResolvedValue(null);
 
-    await expect(premiumService.findUserByEmail('nobody@example.com')).rejects.toThrow(NotFoundError);
+    await expect(premiumService.findUserByEmail('nobody@example.com')).rejects.toThrow(
+      NotFoundError,
+    );
   });
 
   it('returns the PublicUser as-is when found — no extra transformation needed', async () => {
@@ -131,7 +133,9 @@ describe('grantPremium', () => {
       new Error('NO_DEVICE_ON_FILE'),
     );
 
-    await expect(premiumService.grantPremium(1, 42, undefined)).rejects.toThrow('NO_DEVICE_ON_FILE');
+    await expect(premiumService.grantPremium(1, 42, undefined)).rejects.toThrow(
+      'NO_DEVICE_ON_FILE',
+    );
     // Steps after the failure point should never fire — this confirms
     // the transaction callback actually stops at the throw rather than
     // swallowing it and continuing.

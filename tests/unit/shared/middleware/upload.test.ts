@@ -38,7 +38,7 @@ describe('validateFileSignature', () => {
     });
   });
 
-  it('passes through untouched when no file is present — not this middleware\'s concern', () => {
+  it("passes through untouched when no file is present — not this middleware's concern", () => {
     const next = vi.fn() as unknown as NextFunction;
     validateFileSignature(fakeReq(undefined), {} as Response, next);
 

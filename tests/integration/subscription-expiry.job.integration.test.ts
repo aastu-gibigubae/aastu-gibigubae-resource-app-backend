@@ -73,7 +73,7 @@ describe('runSubscriptionExpiryJob (real database)', () => {
     expect(notifications).toHaveLength(0);
   });
 
-    it('creates exactly one subscription_expiring notification for a user entering the 7-day window, and does not duplicate it on an immediate second run', async () => {
+  it('creates exactly one subscription_expiring notification for a user entering the 7-day window, and does not duplicate it on an immediate second run', async () => {
     // 7.5 days out, not exactly 7 — lands comfortably in the middle of
     // the job's single 24h trigger window rather than right on its
     // edge. The job computes its own `now` a few milliseconds after

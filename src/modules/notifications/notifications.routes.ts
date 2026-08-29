@@ -7,7 +7,11 @@ import * as notificationsController from './notifications.controller';
 // notifications), no admin variant exists for this module.
 export const notificationsRouter = Router();
 
-notificationsRouter.get('/notifications', requireAuth, asyncHandler(notificationsController.getNotifications));
+notificationsRouter.get(
+  '/notifications',
+  requireAuth,
+  asyncHandler(notificationsController.getNotifications),
+);
 notificationsRouter.post(
   '/notifications/:id/read',
   requireAuth,

@@ -93,7 +93,11 @@ describe('signup', () => {
 });
 
 describe('login', () => {
-  const input = { email: 'student@example.com', password: 'password123', deviceFingerprint: 'fp_abc123' };
+  const input = {
+    email: 'student@example.com',
+    password: 'password123',
+    deviceFingerprint: 'fp_abc123',
+  };
 
   it('records a failed attempt and throws INVALID_CREDENTIALS when the email does not exist', async () => {
     vi.mocked(usersService.findByEmailWithCredentials).mockResolvedValue(null);
@@ -128,7 +132,12 @@ describe('login', () => {
 });
 
 describe('refresh', () => {
-  const validPayload = { userId: 1, role: 'student' as const, jti: 'jti_1', deviceFingerprint: 'fp_abc123' };
+  const validPayload = {
+    userId: 1,
+    role: 'student' as const,
+    jti: 'jti_1',
+    deviceFingerprint: 'fp_abc123',
+  };
 
   it('throws REFRESH_TOKEN_INVALID when the token fails signature verification', async () => {
     vi.mocked(verifyRefreshToken).mockImplementation(() => {

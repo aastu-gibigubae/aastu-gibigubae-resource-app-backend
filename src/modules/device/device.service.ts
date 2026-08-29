@@ -50,7 +50,10 @@ export const activateFromLastLogin = async (
   // — the student has never logged in, so there's no fingerprint to
   // activate a device with yet.
   if (!targetUser?.lastDeviceFingerprint) {
-    throw new ConflictError('NO_DEVICE_ON_FILE', 'This student has never logged in — nothing to activate yet');
+    throw new ConflictError(
+      'NO_DEVICE_ON_FILE',
+      'This student has never logged in — nothing to activate yet',
+    );
   }
 
   // Not explicitly spec'd — my own defensive addition. The documented
@@ -68,7 +71,12 @@ export const activateFromLastLogin = async (
     );
   }
 
-  const device = await deviceRepository.create(targetUserId, targetUser.lastDeviceFingerprint, adminId, tx);
+  const device = await deviceRepository.create(
+    targetUserId,
+    targetUser.lastDeviceFingerprint,
+    adminId,
+    tx,
+  );
   await usersService.setActivationStatus(targetUserId, 'activated', tx);
 
   // Returned so premium.service.grantPremium can include device_id in
@@ -131,7 +139,11 @@ export const checkHeartbeat = async (
   // token was issued. Treat the same as "not subscribed" rather than
   // throwing, since there's no meaningful "not found" response
   // documented for this endpoint.
-  if (!status || status.subscriptionStatus !== 'active' || status.activationStatus !== 'activated') {
+  if (
+    !status ||
+    status.subscriptionStatus !== 'active' ||
+    status.activationStatus !== 'activated'
+  ) {
     return {
       subscriptionStatus: status?.subscriptionStatus ?? 'none',
       subscriptionExpiryDate: status?.subscriptionExpiryDate ?? null,

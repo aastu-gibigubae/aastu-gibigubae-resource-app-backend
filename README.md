@@ -11,31 +11,37 @@ Express + TypeScript REST API powering the AASTU Gibi Gubae freshman course reso
 ## Getting Started
 
 1. Clone the repo and install dependencies:
+
 ```bash
    npm install
 ```
 
 2. Copy the environment template and fill in real values:
+
 ```bash
    cp .env.example .env
 ```
 
 3. Run database migrations:
+
 ```bash
    npx prisma migrate dev
 ```
 
 4. Start the dev server (auto-restarts on file changes):
+
 ```bash
    npm run dev
 ```
 
-   Server runs on `http://localhost:3000` by default. Confirm it's up:
+Server runs on `http://localhost:3000` by default. Confirm it's up:
+
 ```bash
    curl http://localhost:3000/health
 ```
 
 ## Project Structure
+
 ```
 src/
 app.ts # Configured Express app (middleware + routers, no .listen())
@@ -69,13 +75,13 @@ integration/
 
 ## Available Scripts
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Start the dev server with auto-restart on changes |
-| `npm run build` | Compile TypeScript to `dist/` |
-| `npm start` | Run the compiled build (production) |
+| Command                   | What it does                                      |
+| ------------------------- | ------------------------------------------------- |
+| `npm run dev`             | Start the dev server with auto-restart on changes |
+| `npm run build`           | Compile TypeScript to `dist/`                     |
+| `npm start`               | Run the compiled build (production)               |
 | `npm run prisma:generate` | Regenerate the Prisma client after schema changes |
-| `npm run prisma:migrate` | Create and apply a new database migration |
+| `npm run prisma:migrate`  | Create and apply a new database migration         |
 
 ## Branching & Contributing
 

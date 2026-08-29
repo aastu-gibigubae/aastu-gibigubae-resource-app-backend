@@ -79,7 +79,9 @@ export const updateDepartment = async (req: Request, res: Response): Promise<voi
     },
     req.user!.id,
   );
-  res.status(200).json({ id: department.id, stream_id: department.streamId, name: department.name });
+  res
+    .status(200)
+    .json({ id: department.id, stream_id: department.streamId, name: department.name });
 };
 
 // ---- Courses ----

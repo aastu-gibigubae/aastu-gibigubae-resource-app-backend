@@ -1,11 +1,18 @@
 import { createHash } from 'node:crypto';
 import type { Resource, ResourceCategory } from '@prisma/client';
-import { ALLOWED_FILE_MIME_TYPE, FREE_SAMPLE_LIMIT_PER_COURSE_CATEGORY } from '../../config/constants';
+import {
+  ALLOWED_FILE_MIME_TYPE,
+  FREE_SAMPLE_LIMIT_PER_COURSE_CATEGORY,
+} from '../../config/constants';
 import { env } from '../../config/env';
 import { writeAuditLog } from '../../infrastructure/audit/audit-log';
 import * as r2Client from '../../infrastructure/storage/r2-client';
 import { BadRequestError, NotFoundError } from '../../shared/errors/app-errors';
-import { buildPaginationEnvelope, type PaginationEnvelope, type PageParams } from '../../shared/utils/paginate';
+import {
+  buildPaginationEnvelope,
+  type PaginationEnvelope,
+  type PageParams,
+} from '../../shared/utils/paginate';
 import { generateObjectKey } from '../../shared/utils/generate-object-key';
 import * as deviceService from '../device/device.service';
 import * as usersService from '../users/users.service';
@@ -43,7 +50,11 @@ export const createStream = async (name: string, adminId: number): Promise<Publi
   return { id: stream.id, name: stream.name, createdAt: stream.createdAt };
 };
 
-export const updateStream = async (id: number, name: string, adminId: number): Promise<PublicStream> => {
+export const updateStream = async (
+  id: number,
+  name: string,
+  adminId: number,
+): Promise<PublicStream> => {
   const current = await catalogRepository.findStreamById(id);
   if (!current) throw new NotFoundError('Stream not found', 'STREAM_NOT_FOUND');
 
@@ -313,7 +324,10 @@ export const createResource = async (
   // buffering a 2MB upload to Cloudflare only to reject it a moment
   // later; the limit is knowable from the database alone.
   if (input.isFreeSample) {
-    const freeSampleCount = await catalogRepository.countFreeSamples(input.courseId, input.category);
+    const freeSampleCount = await catalogRepository.countFreeSamples(
+      input.courseId,
+      input.category,
+    );
     if (freeSampleCount >= FREE_SAMPLE_LIMIT_PER_COURSE_CATEGORY) {
       throw new BadRequestError(
         'FREE_SAMPLE_LIMIT_REACHED',
@@ -492,7 +506,11 @@ export const search = async (
     catalogRepository.searchResources(query),
   ]);
 
-  const courseResults: SearchResult[] = courses.map((c) => ({ type: 'course', id: c.id, name: c.name }));
+  const courseResults: SearchResult[] = courses.map((c) => ({
+    type: 'course',
+    id: c.id,
+    name: c.name,
+  }));
 
   const subscriptionStatus = await usersService.getSubscriptionStatus(userId);
   const deviceValid = deviceFingerprint

@@ -59,7 +59,10 @@ export const signup = async (input: SignupInput): Promise<AuthResult> => {
   // Named to parallel EMAIL_ALREADY_EXISTS.
   const existingByPhone = await usersService.findByPhone(input.phone);
   if (existingByPhone) {
-    throw new BadRequestError('PHONE_ALREADY_EXISTS', 'An account with this phone number already exists');
+    throw new BadRequestError(
+      'PHONE_ALREADY_EXISTS',
+      'An account with this phone number already exists',
+    );
   }
 
   const passwordHash = await hashPassword(input.password);
@@ -120,7 +123,10 @@ export const login = async (input: LoginInput, ip: string): Promise<AuthResult> 
 // "force a full re-login," so there's nothing useful gained by
 // distinguishing them, and doing so would leak which case applied.
 export const refresh = async (refreshToken: string): Promise<TokenPair> => {
-  const invalidError = new UnauthorizedError('Invalid or expired refresh token', 'REFRESH_TOKEN_INVALID');
+  const invalidError = new UnauthorizedError(
+    'Invalid or expired refresh token',
+    'REFRESH_TOKEN_INVALID',
+  );
 
   let payload;
   try {
@@ -154,14 +160,20 @@ export const refresh = async (refreshToken: string): Promise<TokenPair> => {
 // header) — deviceFingerprint comes from the access token's own claim
 // instead, since that's the only thing identifying "which session"
 // this is.
-export const logout = async (userId: number, deviceFingerprint: string | undefined): Promise<void> => {
+export const logout = async (
+  userId: number,
+  deviceFingerprint: string | undefined,
+): Promise<void> => {
   // No fingerprint on the access token at all (e.g. a signup-issued
   // token that never went through login) — there's no session to look
   // up. Not an error case worth surfacing; nothing to revoke, so this
   // just no-ops.
   if (!deviceFingerprint) return;
 
-  const activeToken = await authRepository.findActiveByUserAndFingerprint(userId, deviceFingerprint);
+  const activeToken = await authRepository.findActiveByUserAndFingerprint(
+    userId,
+    deviceFingerprint,
+  );
   // Already logged out, or never had a matching session — idempotent
   // either way, calling logout twice shouldn't error.
   if (!activeToken) return;

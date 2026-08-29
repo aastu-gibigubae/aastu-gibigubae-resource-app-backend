@@ -5,7 +5,13 @@ import { paginationSchema } from '../../shared/validation/common.schemas';
 // since Prisma's generated enum is a TS type, not a runtime value
 // array zod can derive an enum from directly (same reasoning as
 // catalog.validation.ts's resourceCategoryEnum).
-const issueReasonEnum = z.enum(['broken_file', 'wrong_file', 'incorrect_category', 'poor_quality', 'other']);
+const issueReasonEnum = z.enum([
+  'broken_file',
+  'wrong_file',
+  'incorrect_category',
+  'poor_quality',
+  'other',
+]);
 
 export const createReportSchema = z.object({
   reason: issueReasonEnum,

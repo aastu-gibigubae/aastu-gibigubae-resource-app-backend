@@ -67,7 +67,6 @@ export const setActivationStatus = (
   tx: PrismaOrTx = prisma,
 ): Promise<User> => tx.user.update({ where: { id: userId }, data: { activationStatus: status } });
 
-
 // For jobs/subscription-expiry.job.ts — FR-7.3's silent daily sweep.
 // Bulk updateMany, not per-row: this is a scheduled system process,
 // not a request handling one specific user, so there's no meaningful

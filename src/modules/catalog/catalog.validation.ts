@@ -37,9 +37,15 @@ export const courseUpdateSchema = z
     department_id: z.coerce.number().int().positive().optional(),
     academic_year: z.coerce.number().int().min(1).max(5).optional(),
   })
-  .refine((data) => data.name !== undefined || data.department_id !== undefined || data.academic_year !== undefined, {
-    message: 'At least one field is required',
-  });
+  .refine(
+    (data) =>
+      data.name !== undefined ||
+      data.department_id !== undefined ||
+      data.academic_year !== undefined,
+    {
+      message: 'At least one field is required',
+    },
+  );
 
 // GET /courses?stream_id=&department_id=&year=&page=&limit=
 export const courseQuerySchema = z
@@ -85,7 +91,9 @@ export const resourceUpdateSchema = z.object({
 // required (the SRS's own example always includes it; browsing is
 // category-by-category, matching a tabbed UI, not an all-categories-
 // at-once view).
-export const resourceQuerySchema = z.object({ category: resourceCategoryEnum }).and(paginationSchema);
+export const resourceQuerySchema = z
+  .object({ category: resourceCategoryEnum })
+  .and(paginationSchema);
 
 export const searchQuerySchema = z.object({
   q: z.string().min(1, 'Search query is required'),

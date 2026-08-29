@@ -47,7 +47,9 @@ const mockResource = {
 
 beforeEach(() => {
   vi.resetAllMocks();
-  vi.mocked(r2Client.buildUrl).mockImplementation((key: string) => `https://files.example.com/${key}`);
+  vi.mocked(r2Client.buildUrl).mockImplementation(
+    (key: string) => `https://files.example.com/${key}`,
+  );
 });
 
 describe('createResource', () => {
@@ -411,4 +413,3 @@ describe('search', () => {
     ]);
   });
 });
-

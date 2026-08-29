@@ -68,7 +68,9 @@ describe('updateStream', () => {
       id: 2, // a different stream owns this name
     });
 
-    await expect(catalogService.updateStream(1, 'Applied Science', 1)).rejects.toThrow(BadRequestError);
+    await expect(catalogService.updateStream(1, 'Applied Science', 1)).rejects.toThrow(
+      BadRequestError,
+    );
   });
 });
 
@@ -103,14 +105,18 @@ describe('updateDepartment', () => {
   it('throws DEPARTMENT_NOT_FOUND when the target does not exist', async () => {
     vi.mocked(catalogRepository.findDepartmentById).mockResolvedValue(null);
 
-    await expect(catalogService.updateDepartment(999, { name: 'X' }, 1)).rejects.toThrow(NotFoundError);
+    await expect(catalogService.updateDepartment(999, { name: 'X' }, 1)).rejects.toThrow(
+      NotFoundError,
+    );
   });
 
   it('throws STREAM_NOT_FOUND when reassigning to a nonexistent stream', async () => {
     vi.mocked(catalogRepository.findDepartmentById).mockResolvedValue(mockDepartment);
     vi.mocked(catalogRepository.findStreamById).mockResolvedValue(null);
 
-    await expect(catalogService.updateDepartment(2, { streamId: 999 }, 1)).rejects.toThrow(NotFoundError);
+    await expect(catalogService.updateDepartment(2, { streamId: 999 }, 1)).rejects.toThrow(
+      NotFoundError,
+    );
   });
 
   it('merges current + incoming fields to check duplicates correctly when only one field changes', async () => {
@@ -152,7 +158,10 @@ describe('createCourse', () => {
     vi.mocked(catalogRepository.findCourseByDeptYearName).mockResolvedValue(null);
     vi.mocked(catalogRepository.createCourse).mockResolvedValue(mockCourse);
 
-    await catalogService.createCourse({ departmentId: 2, academicYear: 2, name: 'Data Structures' }, 99);
+    await catalogService.createCourse(
+      { departmentId: 2, academicYear: 2, name: 'Data Structures' },
+      99,
+    );
 
     expect(writeAuditLog).toHaveBeenCalledWith(99, 'create', 'Course', 3);
   });
@@ -160,7 +169,10 @@ describe('createCourse', () => {
 
 describe('getCourses', () => {
   it('maps streamId/departmentId/academicYear filters through to the repository and builds the pagination envelope', async () => {
-    vi.mocked(catalogRepository.findCourses).mockResolvedValue({ courses: [mockCourse], total: 47 });
+    vi.mocked(catalogRepository.findCourses).mockResolvedValue({
+      courses: [mockCourse],
+      total: 47,
+    });
 
     const result = await catalogService.getCourses({ departmentId: 2 }, { page: 1, limit: 20 });
 

@@ -117,13 +117,13 @@ export const getSubscriptionStatus = async (
   };
 };
 
-
 // For jobs/subscription-expiry.job.ts — thin pass-throughs, same
 // module-boundary rule as every other cross-module call in this app
 // (catalog.service.resourceExists, device.service.isDeviceValid): the
 // job reads/writes users through this service, never through
 // users.repository directly.
-export const expireOverdueSubscriptions = (): Promise<number> => usersRepository.expireOverdueSubscriptions();
+export const expireOverdueSubscriptions = (): Promise<number> =>
+  usersRepository.expireOverdueSubscriptions();
 
 export const findUsersExpiringBetween = async (
   windowStart: Date,

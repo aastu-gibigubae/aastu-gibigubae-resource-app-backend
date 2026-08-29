@@ -29,9 +29,9 @@ describe('createReport', () => {
   it('throws RESOURCE_NOT_FOUND when the resource does not exist — checked via catalog.service, not the repository', async () => {
     vi.mocked(catalogService.resourceExists).mockResolvedValue(false);
 
-    await expect(
-      issuesService.createReport(999, 7, 'broken_file', undefined),
-    ).rejects.toThrow(NotFoundError);
+    await expect(issuesService.createReport(999, 7, 'broken_file', undefined)).rejects.toThrow(
+      NotFoundError,
+    );
     expect(issuesRepository.findOpenReport).not.toHaveBeenCalled();
   });
 
@@ -39,9 +39,9 @@ describe('createReport', () => {
     vi.mocked(catalogService.resourceExists).mockResolvedValue(true);
     vi.mocked(issuesRepository.findOpenReport).mockResolvedValue(mockReport);
 
-    await expect(
-      issuesService.createReport(42, 7, 'broken_file', undefined),
-    ).rejects.toThrow(ConflictError);
+    await expect(issuesService.createReport(42, 7, 'broken_file', undefined)).rejects.toThrow(
+      ConflictError,
+    );
     expect(issuesRepository.create).not.toHaveBeenCalled();
   });
 

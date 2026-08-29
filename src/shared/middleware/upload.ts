@@ -51,10 +51,7 @@ export const validateFileSignature = async (
     const detected = await fileTypeFromBuffer(req.file.buffer);
 
     if (!detected || detected.mime !== ALLOWED_FILE_MIME_TYPE) {
-      throw new BadRequestError(
-        'INVALID_FILE_TYPE',
-        'Only PDF files are allowed',
-      );
+      throw new BadRequestError('INVALID_FILE_TYPE', 'Only PDF files are allowed');
     }
 
     next();

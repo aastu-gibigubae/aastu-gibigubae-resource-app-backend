@@ -1,4 +1,11 @@
-import type { Course, Department, Prisma, Resource, ResourceCategory, Stream } from '@prisma/client';
+import type {
+  Course,
+  Department,
+  Prisma,
+  Resource,
+  ResourceCategory,
+  Stream,
+} from '@prisma/client';
 import { prisma } from '../../infrastructure/database/prisma-client';
 import { toSkipTake, type PageParams } from '../../shared/utils/paginate';
 import type { CourseFilters, CreateResourceInput } from './catalog.types';
@@ -30,10 +37,13 @@ export const updateStream = (id: number, name: string, tx: PrismaOrTx = prisma):
 export const findDepartmentsByStream = (
   streamId: number,
   tx: PrismaOrTx = prisma,
-): Promise<Department[]> => tx.department.findMany({ where: { streamId }, orderBy: { name: 'asc' } });
+): Promise<Department[]> =>
+  tx.department.findMany({ where: { streamId }, orderBy: { name: 'asc' } });
 
-export const findDepartmentById = (id: number, tx: PrismaOrTx = prisma): Promise<Department | null> =>
-  tx.department.findUnique({ where: { id } });
+export const findDepartmentById = (
+  id: number,
+  tx: PrismaOrTx = prisma,
+): Promise<Department | null> => tx.department.findUnique({ where: { id } });
 
 // For DEPARTMENT_ALREADY_EXISTS — matches the DB's composite unique on
 // (stream_id, name).
@@ -109,8 +119,10 @@ export const updateCourse = (
 
 // For DEPARTMENT/STREAM cascade-delete — need every Course under a
 // Department, to then walk each Course's Resources.
-export const findCoursesByDepartment = (departmentId: number, tx: PrismaOrTx = prisma): Promise<Course[]> =>
-  tx.course.findMany({ where: { departmentId } });
+export const findCoursesByDepartment = (
+  departmentId: number,
+  tx: PrismaOrTx = prisma,
+): Promise<Course[]> => tx.course.findMany({ where: { departmentId } });
 
 // ---- Cascade-delete raw removals (Streams/Departments/Courses) ----
 // Hard deletes — no soft-delete field on these three tables
@@ -149,8 +161,10 @@ export const findResourceById = (id: number, tx: PrismaOrTx = prisma): Promise<R
 // For cascade-delete only — every resource under a course, regardless
 // of category, so the service can walk and delete each one before the
 // course itself can be removed.
-export const findResourcesByCourse = (courseId: number, tx: PrismaOrTx = prisma): Promise<Resource[]> =>
-  tx.resource.findMany({ where: { courseId, deletedAt: null } });
+export const findResourcesByCourse = (
+  courseId: number,
+  tx: PrismaOrTx = prisma,
+): Promise<Resource[]> => tx.resource.findMany({ where: { courseId, deletedAt: null } });
 
 // FR-2.5 — max 2 free samples per (course, category).
 export const countFreeSamples = (

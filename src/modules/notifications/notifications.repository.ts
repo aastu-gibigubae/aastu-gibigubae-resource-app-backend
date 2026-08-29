@@ -41,7 +41,6 @@ export const markRead = async (
   return result.count;
 };
 
-
 // For jobs/subscription-expiry.job.ts's duplicate-send guard — belt-
 // and-suspenders against the job firing the same subscription_expiring
 // warning twice if it's ever accidentally run more than once in the

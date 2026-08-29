@@ -79,7 +79,6 @@ export const markRead = async (notificationId: number, userId: number): Promise<
   }
 };
 
-
 // For jobs/subscription-expiry.job.ts's duplicate-send guard.
 export const hasRecentNotificationOfType = (
   userId: number,

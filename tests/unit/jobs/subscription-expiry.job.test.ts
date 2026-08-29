@@ -40,7 +40,8 @@ describe('runSubscriptionExpiryJob', () => {
     await runSubscriptionExpiryJob();
 
     expect(usersService.findUsersExpiringBetween).toHaveBeenCalledTimes(1);
-    const [windowStart, windowEnd] = vi.mocked(usersService.findUsersExpiringBetween).mock.calls[0]!;
+    const [windowStart, windowEnd] = vi.mocked(usersService.findUsersExpiringBetween).mock
+      .calls[0]!;
     // windowEnd should be exactly 24h after windowStart — a single-day
     // bucket, not an open-ended "within N days" range.
     expect(windowEnd.getTime() - windowStart.getTime()).toBe(24 * 60 * 60 * 1000);
@@ -68,8 +69,8 @@ describe('runSubscriptionExpiryJob', () => {
 
   it('checks for a duplicate per-user, not globally — one duplicate does not block the others', async () => {
     vi.mocked(usersService.findUsersExpiringBetween).mockResolvedValue([mockUser(1), mockUser(2)]);
-    vi.mocked(notificationsService.hasRecentNotificationOfType).mockImplementation(async (userId) =>
-      userId === 1,
+    vi.mocked(notificationsService.hasRecentNotificationOfType).mockImplementation(
+      async (userId) => userId === 1,
     );
 
     const result = await runSubscriptionExpiryJob();

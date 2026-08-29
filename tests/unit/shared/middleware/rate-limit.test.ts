@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { NextFunction, Request, Response } from 'express';
-import { checkLockout, recordFailedAttempt, resetAttempts } from '../../../../src/shared/middleware/rate-limit';
+import {
+  checkLockout,
+  recordFailedAttempt,
+  resetAttempts,
+} from '../../../../src/shared/middleware/rate-limit';
 import { AccountLockedError } from '../../../../src/shared/errors/app-errors';
 
 // Builds a minimal fake Request carrying only what checkLockout reads.

@@ -8,7 +8,6 @@ export default defineConfig({
     // run against these dummy env values, which point at nothing real.
     include: ['tests/unit/**/*.test.ts'],
 
-    
     // env.ts validates these at import time — unit tests that never
     // touch a real database still trigger that validation just by
     // importing anything that eventually imports env.ts (like jwt.ts).
