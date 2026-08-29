@@ -26,3 +26,14 @@ export const addMonths = (date: Date, months: number): Date => {
   result.setMonth(result.getMonth() + months);
   return result;
 };
+
+// Second real consumer of this file — jobs/subscription-expiry.job.ts
+// uses this to compute the 7-day-out warning window
+// (SUBSCRIPTION_EXPIRY_WARNING_DAYS). setDate has no day-of-month
+// overflow surprises the way setMonth does — adding days always rolls
+// forward cleanly into the next month/year.
+export const addDays = (date: Date, days: number): Date => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};
