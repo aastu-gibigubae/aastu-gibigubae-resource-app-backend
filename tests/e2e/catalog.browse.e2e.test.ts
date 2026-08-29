@@ -48,15 +48,15 @@ const createdCourseIds: number[] = [];
 const createdResourceIds: number[] = [];
 
 afterAll(async () => {
-//   await prisma.resource.deleteMany({ where: { id: { in: createdResourceIds } } });
-//   await prisma.course.deleteMany({ where: { id: { in: createdCourseIds } } });
-//   await prisma.department.deleteMany({ where: { id: { in: createdDepartmentIds } } });
-//   await prisma.stream.deleteMany({ where: { id: { in: createdStreamIds } } });
-//   await prisma.notification.deleteMany({ where: { userId: { in: createdUserIds } } });
-//   await prisma.deviceRecord.deleteMany({ where: { userId: { in: createdUserIds } } });
-//   await prisma.paymentSubmission.deleteMany({ where: { userId: { in: createdUserIds } } });
-//   await prisma.adminActionLog.deleteMany({ where: { adminId: { in: createdUserIds } } });
-//   await prisma.user.deleteMany({ where: { id: { in: createdUserIds } } });
+  await prisma.resource.deleteMany({ where: { id: { in: createdResourceIds } } });
+  await prisma.course.deleteMany({ where: { id: { in: createdCourseIds } } });
+  await prisma.department.deleteMany({ where: { id: { in: createdDepartmentIds } } });
+  await prisma.stream.deleteMany({ where: { id: { in: createdStreamIds } } });
+  await prisma.notification.deleteMany({ where: { userId: { in: createdUserIds } } });
+  await prisma.deviceRecord.deleteMany({ where: { userId: { in: createdUserIds } } });
+  await prisma.paymentSubmission.deleteMany({ where: { userId: { in: createdUserIds } } });
+  await prisma.adminActionLog.deleteMany({ where: { adminId: { in: createdUserIds } } });
+  await prisma.user.deleteMany({ where: { id: { in: createdUserIds } } });
   await prisma.$disconnect();
 });
 
