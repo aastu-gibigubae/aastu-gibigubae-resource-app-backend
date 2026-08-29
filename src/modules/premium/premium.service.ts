@@ -72,7 +72,7 @@ export const grantPremium = async (
     // doesn't turn into an admin-facing 500 mid-grant. Caught for real
     // by this module's own integration test failing against a Neon
     // instance that had gone idle — not a hypothetical.
-    { maxWait: 10_000, timeout: 15_000 },
+    { maxWait: 15_000, timeout: 30_000 },
   );
 
   return {
