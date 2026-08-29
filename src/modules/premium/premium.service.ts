@@ -56,33 +56,24 @@ export const grantPremium = async (
 
   const expiryDate = addMonths(new Date(), SUBSCRIPTION_DURATION_MONTHS);
 
-  const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    await usersService.setSubscriptionActive(targetUserId, expiryDate, tx);
-    await premiumRepository.createBookkeepingRecord(targetUserId, note, adminId, tx);
-
-    // Cross-module call — device owns everything about the actual
-    // binding (DeviceRecord creation + activationStatus flip); premium
-    // only orchestrates, per the architecture doc's explicit framing
-    // of this as "the clearest example in the whole system of one
-    // module coordinating several others without duplicating their
-    // logic." Throws NO_DEVICE_ON_FILE / DEVICE_ALREADY_ACTIVE itself
-    // if either guard fails — those propagate up and roll back the
-    // whole transaction, exactly as intended.
-    const { deviceId } = await deviceService.activateFromLastLogin(targetUserId, adminId, tx);
-
-    // Cross-module call — reuses the exact SRS-worded 'premium_approved'
-    // template already built in Phase 1's notifications module.
-    await notificationsService.create(targetUserId, 'premium_approved', tx);
-
-    // 'grant_premium' as its own named actionType, matching the
-    // architecture doc's own Flow 2 pseudocode exactly — distinct from
-    // the generic 'create'/'update'/'delete' verbs used by catalog's
-    // CRUD actions, since this is a single named admin action, not a
-    // CRUD operation on a Prisma model.
-    await writeAuditLog(adminId, 'grant_premium', 'User', targetUserId, tx);
-
-    return { deviceId };
-  });
+  const result = await prisma.$transaction(
+    async (tx: Prisma.TransactionClient) => {
+      await usersService.setSubscriptionActive(targetUserId, expiryDate, tx);
+      await premiumRepository.createBookkeepingRecord(targetUserId, note, adminId, tx);
+      const { deviceId } = await deviceService.activateFromLastLogin(targetUserId, adminId, tx);
+      await notificationsService.create(targetUserId, 'premium_approved', tx);
+      await writeAuditLog(adminId, 'grant_premium', 'User', targetUserId, tx);
+      return { deviceId };
+    },
+    // Five sequential round trips against serverless Postgres (Neon) —
+    // each is its own network hop, plus Neon's free-tier compute can
+    // add real cold-start latency. Prisma's default interactive-
+    // transaction timeout is 5000ms; bumped so a slow network moment
+    // doesn't turn into an admin-facing 500 mid-grant. Caught for real
+    // by this module's own integration test failing against a Neon
+    // instance that had gone idle — not a hypothetical.
+    { maxWait: 10_000, timeout: 15_000 },
+  );
 
   return {
     userId: targetUserId,
