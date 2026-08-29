@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:integration": "dotenv -e .env.test -- vitest run --config vitest.integration.config.ts"
+    "test:integration": "dotenv -e .env.test -- vitest run --config vitest.integration.config.ts",
+    "test:e2e": "dotenv -e .env.test -- vitest run --config vitest.e2e.config.ts"
   },
   "repository": {
     "type": "git",
@@ -53,6 +54,8 @@
     "typescript": "^7.0.2",
     "vitest": "^3.2.4",
     "@types/node-cron": "^3.0.11",
-    "dotenv-cli": "^8.0.0"
+    "dotenv-cli": "^8.0.0",
+    "supertest": "^7.1.1",
+    "@types/supertest": "^6.0.2"
   }
 }
