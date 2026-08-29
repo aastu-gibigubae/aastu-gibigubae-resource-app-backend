@@ -78,3 +78,11 @@ export const markRead = async (notificationId: number, userId: number): Promise<
     throw new NotFoundError('Notification not found');
   }
 };
+
+
+// For jobs/subscription-expiry.job.ts's duplicate-send guard.
+export const hasRecentNotificationOfType = (
+  userId: number,
+  type: NotificationType,
+  since: Date,
+): Promise<boolean> => notificationsRepository.hasRecentNotificationOfType(userId, type, since);

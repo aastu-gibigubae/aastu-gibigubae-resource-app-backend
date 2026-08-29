@@ -66,3 +66,37 @@ export const setActivationStatus = (
   status: ActivationStatus,
   tx: PrismaOrTx = prisma,
 ): Promise<User> => tx.user.update({ where: { id: userId }, data: { activationStatus: status } });
+
+
+// For jobs/subscription-expiry.job.ts — FR-7.3's silent daily sweep.
+// Bulk updateMany, not per-row: this is a scheduled system process,
+// not a request handling one specific user, so there's no meaningful
+// "which user" to thread through the way every other function in this
+// file does. Returns the count of rows actually flipped, for the job's
+// own summary log — deliberately no notification and no AdminActionLog
+// entry (this isn't an admin action, and the NotificationType enum has
+// no "just expired" variant — only subscription_expiring exists).
+export const expireOverdueSubscriptions = async (tx: PrismaOrTx = prisma): Promise<number> => {
+  const result = await tx.user.updateMany({
+    where: { subscriptionStatus: 'active', subscriptionExpiryDate: { lt: new Date() } },
+    data: { subscriptionStatus: 'expired' },
+  });
+  return result.count;
+};
+
+// For jobs/subscription-expiry.job.ts — FR-7.1's ~7-day-out warning.
+// windowStart/windowEnd are computed by the job itself
+// (shared/utils/date-math.ts's addDays), not here — this function is
+// just the query, same separation of concerns as every other
+// repository function in this file.
+export const findUsersExpiringBetween = (
+  windowStart: Date,
+  windowEnd: Date,
+  tx: PrismaOrTx = prisma,
+): Promise<User[]> =>
+  tx.user.findMany({
+    where: {
+      subscriptionStatus: 'active',
+      subscriptionExpiryDate: { gte: windowStart, lt: windowEnd },
+    },
+  });

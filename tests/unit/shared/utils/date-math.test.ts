@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addMonths } from '../../../../src/shared/utils/date-math';
+import { addDays, addMonths } from '../../../../src/shared/utils/date-math';
 
 describe('addMonths', () => {
   it('adds a plain number of months within the same year', () => {
@@ -29,5 +29,26 @@ describe('addMonths', () => {
     // this test exists so that behavior is explicit and locked in,
     // not an accident nobody noticed.
     expect(result.getUTCMonth()).toBe(2); // March, 0-indexed
+  });
+});
+
+describe('addDays', () => {
+  it('adds days within the same month', () => {
+    const result = addDays(new Date('2026-08-06T00:00:00Z'), 7);
+    expect(result.getUTCDate()).toBe(13);
+    expect(result.getUTCMonth()).toBe(7); // August, 0-indexed
+  });
+
+  it('rolls over into the next month correctly', () => {
+    const result = addDays(new Date('2026-08-28T00:00:00Z'), 7);
+    expect(result.getUTCMonth()).toBe(8); // September
+    expect(result.getUTCDate()).toBe(4);
+  });
+
+  it('does not mutate the original date passed in', () => {
+    const original = new Date('2026-01-01T00:00:00Z');
+    const originalTime = original.getTime();
+    addDays(original, 7);
+    expect(original.getTime()).toBe(originalTime);
   });
 });

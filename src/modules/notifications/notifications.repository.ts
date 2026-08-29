@@ -40,3 +40,23 @@ export const markRead = async (
   });
   return result.count;
 };
+
+
+// For jobs/subscription-expiry.job.ts's duplicate-send guard — belt-
+// and-suspenders against the job firing the same subscription_expiring
+// warning twice if it's ever accidentally run more than once in the
+// same day (e.g. a crash-restart). The job's own 24h trigger window
+// already makes this unlikely under normal daily-cron operation; this
+// is the extra safety net, not the primary defense.
+export const hasRecentNotificationOfType = async (
+  userId: number,
+  type: NotificationType,
+  since: Date,
+  tx: PrismaOrTx = prisma,
+): Promise<boolean> => {
+  const existing = await tx.notification.findFirst({
+    where: { userId, type, createdAt: { gte: since } },
+    select: { id: true },
+  });
+  return existing !== null;
+};

@@ -3,7 +3,12 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'node',
-    include: ['tests/**/*.test.ts'],
+    // Narrowed to tests/unit/ only — integration tests need a real
+    // test database (see vitest.integration.config.ts) and must never
+    // run against these dummy env values, which point at nothing real.
+    include: ['tests/unit/**/*.test.ts'],
+
+    
     // env.ts validates these at import time — unit tests that never
     // touch a real database still trigger that validation just by
     // importing anything that eventually imports env.ts (like jwt.ts).

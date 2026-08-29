@@ -28,3 +28,8 @@ export const DEVICE_REVERIFICATION_WINDOW_DAYS = 7;
 // FR-3.5 — GET /courses and GET /courses/:id/resources pagination
 export const DEFAULT_PAGE_SIZE = 20;
 export const MAX_PAGE_SIZE = 50;
+
+// FR-7.1 — "subscription expiring (~7 days out)" in-app notification,
+// fired once by jobs/subscription-expiry.job.ts as a student's
+// subscriptionExpiryDate approaches.
+export const SUBSCRIPTION_EXPIRY_WARNING_DAYS = 7;
