@@ -56,9 +56,16 @@ afterAll(async () => {
 describe('grantPremium (real database, real transaction)', () => {
   it('writes to all four tables (User, PaymentSubmission, DeviceRecord, Notification) plus AdminActionLog, atomically', async () => {
     const admin = await createTestUser({ role: 'admin' });
-    const student = await createTestUser({ role: 'student', lastDeviceFingerprint: 'fp_test_device_1' });
+    const student = await createTestUser({
+      role: 'student',
+      lastDeviceFingerprint: 'fp_test_device_1',
+    });
 
-    const result = await grantPremium(admin.id, student.id, 'Paid via Telebirr, confirmed on Telegram');
+    const result = await grantPremium(
+      admin.id,
+      student.id,
+      'Paid via Telebirr, confirmed on Telegram',
+    );
 
     const reloadedUser = await prisma.user.findUniqueOrThrow({ where: { id: student.id } });
     expect(reloadedUser.subscriptionStatus).toBe('active');
@@ -90,7 +97,9 @@ describe('grantPremium (real database, real transaction)', () => {
     const admin = await createTestUser({ role: 'admin' });
     const student = await createTestUser({ role: 'student' });
 
-    await expect(grantPremium(admin.id, student.id, undefined)).rejects.toMatchObject({ code: 'NO_DEVICE_ON_FILE' });
+    await expect(grantPremium(admin.id, student.id, undefined)).rejects.toMatchObject({
+      code: 'NO_DEVICE_ON_FILE',
+    });
 
     const reloadedUser = await prisma.user.findUniqueOrThrow({ where: { id: student.id } });
     expect(reloadedUser.subscriptionStatus).toBe('none');
@@ -108,7 +117,10 @@ describe('grantPremium (real database, real transaction)', () => {
 
   it('rolls back every write when the student already has an active device (DEVICE_ALREADY_ACTIVE) — a second real call against an already-granted student', async () => {
     const admin = await createTestUser({ role: 'admin' });
-    const student = await createTestUser({ role: 'student', lastDeviceFingerprint: 'fp_test_device_2' });
+    const student = await createTestUser({
+      role: 'student',
+      lastDeviceFingerprint: 'fp_test_device_2',
+    });
 
     await grantPremium(admin.id, student.id, undefined);
 
@@ -119,7 +131,9 @@ describe('grantPremium (real database, real transaction)', () => {
       await prisma.user.findUniqueOrThrow({ where: { id: student.id } })
     ).subscriptionExpiryDate;
 
-    await expect(grantPremium(admin.id, student.id, undefined)).rejects.toMatchObject({ code: 'DEVICE_ALREADY_ACTIVE' });
+    await expect(grantPremium(admin.id, student.id, undefined)).rejects.toMatchObject({
+      code: 'DEVICE_ALREADY_ACTIVE',
+    });
 
     const paymentCountAfterSecondCall = await prisma.paymentSubmission.count({
       where: { userId: student.id },

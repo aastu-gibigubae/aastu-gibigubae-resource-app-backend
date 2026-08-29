@@ -210,8 +210,7 @@ export const deleteResource = (id: number, tx: PrismaOrTx = prisma): Promise<Res
 export const hardDeleteResourcesByCourse = (
   courseId: number,
   tx: PrismaOrTx = prisma,
-): Promise<Prisma.BatchPayload> =>
-  tx.resource.deleteMany({ where: { courseId } });
+): Promise<Prisma.BatchPayload> => tx.resource.deleteMany({ where: { courseId } });
 
 // ---- Search (FR-3.4: course and resource titles only) ----
 

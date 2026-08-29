@@ -7,27 +7,10 @@ on:
     branches: [main]
 
 jobs:
-  unit:
-    name: Build & unit tests
+  test-and-build:
+    name: Validate, Test & Build
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - run: npm ci
-
-      - run: npm run build
-
-      - run: npm test
-
-  db-tests:
-    name: Integration & e2e tests
-    runs-on: ubuntu-latest
-    needs: unit
+    
     services:
       postgres:
         image: postgres:16
@@ -42,6 +25,7 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/aastu_gibigubae_ci
       JWT_ACCESS_SECRET: ci-access-secret-at-least-32-characters-long
@@ -51,17 +35,32 @@ jobs:
       R2_SECRET_ACCESS_KEY: ci-secret-access-key
       R2_BUCKET_NAME: ci-bucket
       R2_PUBLIC_URL: https://files.ci.example.com
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-      - run: npx prisma migrate deploy
+      - name: Generate Prisma Client
+        run: npx prisma generate
 
-      - run: npx vitest run --config vitest.integration.config.ts
-      - run: npx vitest run --config vitest.e2e.config.ts
+      - name: Run Core Codebase Checks (Format, Lint, Typecheck, Unit Tests, Build)
+        run: npm run check
+
+      - name: Run Database Migrations
+        run: npx prisma migrate deploy
+
+      - name: Run Integration Tests
+        run: npx vitest run --config vitest.integration.config.ts
+        if: always() # Runs integration tests even if the core checks fail, giving you maximum feedback
+
+      - name: Run E2E Tests
+        run: npx vitest run --config vitest.e2e.config.ts

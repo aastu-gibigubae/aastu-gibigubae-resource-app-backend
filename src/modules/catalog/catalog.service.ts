@@ -244,7 +244,7 @@ export const updateCourse = async (
 const deleteAllResourcesForCourse = async (courseId: number, adminId: number): Promise<void> => {
   const resources = await catalogRepository.findResourcesByCourse(courseId);
   for (const resource of resources) {
-  await deleteResource(resource.id, adminId);
+    await deleteResource(resource.id, adminId);
   }
   // Soft-delete above hides each resource + gives it its own R2
   // cleanup and audit entry, but the row still physically exists.

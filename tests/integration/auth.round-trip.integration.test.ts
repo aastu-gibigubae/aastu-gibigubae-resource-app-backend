@@ -100,7 +100,9 @@ describe('auth full round-trip (real database, real hashing, real JWTs)', () => 
       '127.0.0.1',
     );
 
-    const reloadedUser = await prisma.user.findUniqueOrThrow({ where: { id: signupResult.user.id } });
+    const reloadedUser = await prisma.user.findUniqueOrThrow({
+      where: { id: signupResult.user.id },
+    });
     expect(reloadedUser.lastDeviceFingerprint).toBe('fp_integration_test');
     expect(loginResult.user.id).toBe(signupResult.user.id);
   });
@@ -180,7 +182,9 @@ describe('auth full round-trip (real database, real hashing, real JWTs)', () => 
 
     await authService.logout(signupResult.user.id, 'fp_idempotent_test');
     // Second call, same fingerprint — already revoked, must not throw.
-    await expect(authService.logout(signupResult.user.id, 'fp_idempotent_test')).resolves.toBeUndefined();
+    await expect(
+      authService.logout(signupResult.user.id, 'fp_idempotent_test'),
+    ).resolves.toBeUndefined();
     // No fingerprint at all — the signup-only-token case, must no-op.
     await expect(authService.logout(signupResult.user.id, undefined)).resolves.toBeUndefined();
   });

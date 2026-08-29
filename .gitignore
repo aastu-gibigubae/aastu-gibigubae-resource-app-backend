@@ -1,8 +1,10 @@
 node_modules/
 dist/
+coverage/
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+!.env.test.example
 
 
 *.log
@@ -15,6 +17,3 @@ Thumbs.db
 
 *.swp
 *.swo
-
-coverage/
-.env.test
