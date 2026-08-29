@@ -207,6 +207,12 @@ export const updateResource = (
 export const deleteResource = (id: number, tx: PrismaOrTx = prisma): Promise<Resource> =>
   tx.resource.update({ where: { id }, data: { deletedAt: new Date() } });
 
+export const hardDeleteResourcesByCourse = (
+  courseId: number,
+  tx: PrismaOrTx = prisma,
+): Promise<Prisma.BatchPayload> =>
+  tx.resource.deleteMany({ where: { courseId } });
+
 // ---- Search (FR-3.4: course and resource titles only) ----
 
 export const searchCourses = (query: string, tx: PrismaOrTx = prisma): Promise<Course[]> =>

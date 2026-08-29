@@ -244,8 +244,16 @@ export const updateCourse = async (
 const deleteAllResourcesForCourse = async (courseId: number, adminId: number): Promise<void> => {
   const resources = await catalogRepository.findResourcesByCourse(courseId);
   for (const resource of resources) {
-    await deleteResource(resource.id, adminId);
+  await deleteResource(resource.id, adminId);
   }
+  // Soft-delete above hides each resource + gives it its own R2
+  // cleanup and audit entry, but the row still physically exists.
+  // The parent Course is about to be hard-deleted, and
+  // Resource.course is onDelete: Restrict — confirmed for real by
+  // this module's integration test throwing a live "violates
+  // RESTRICT" error. This removes the rows for real so the cascade
+  // can complete.
+  await catalogRepository.hardDeleteResourcesByCourse(courseId);
 };
 
 export const deleteCourse = async (id: number, adminId: number): Promise<void> => {
