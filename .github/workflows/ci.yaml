@@ -28,13 +28,13 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/aastu_gibigubae_ci
-      JWT_ACCESS_SECRET: ci-access-secret-at-least-32-characters-long
-      JWT_REFRESH_SECRET: ci-refresh-secret-at-least-32-characters-long
-      R2_ACCOUNT_ID: ci-account-id
-      R2_ACCESS_KEY_ID: ci-access-key-id
-      R2_SECRET_ACCESS_KEY: ci-secret-access-key
-      R2_BUCKET_NAME: ci-bucket
-      R2_PUBLIC_URL: https://files.ci.example.com
+      JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+      JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
 
     steps:
       - name: Checkout repository
@@ -43,7 +43,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 25
           cache: npm
 
       - name: Install dependencies
@@ -52,15 +52,19 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Run Core Codebase Checks (Format, Lint, Typecheck, Unit Tests, Build)
-        run: npm run check
-
       - name: Run Database Migrations
         run: npx prisma migrate deploy
 
-      - name: Run Integration Tests
-        run: npx vitest run --config vitest.integration.config.ts
-        if: always() # Runs integration tests even if the core checks fail, giving you maximum feedback
+      - name: Run Lint & Typechecks
+        run: |
+          npm run lint
+          npm run typecheck
 
-      - name: Run E2E Tests
-        run: npx vitest run --config vitest.e2e.config.ts
+      - name: Run Unit & Integration Tests
+        run: |
+          npx vitest run
+          npx vitest run --config vitest.integration.config.ts
+          npx vitest run --config vitest.e2e.config.ts
+
+      - name: Build Application
+        run: npm run build

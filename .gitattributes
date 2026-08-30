@@ -1,0 +1,22 @@
+# Handle line endings automatically for text files
+# and force LF (Linux/Mac) line endings upon check-in
+* text=auto eol=lf
+
+# Ensure specific text files always use LF line endings
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+
+# Treat images and binaries as binary files to prevent corruption
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
+# Collapse lockfiles in GitHub/GitLab diffs for cleaner pull requests
+package-lock.json diff=npm-lockfile
+yarn.lock linguist-generated
+pnpm-lock.yaml linguist-generated

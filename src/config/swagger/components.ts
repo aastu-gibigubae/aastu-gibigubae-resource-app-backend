@@ -110,9 +110,7 @@ const pagination: OpenAPIV3.SchemaObject = {
   },
 };
 
-// ---------------------------------------------------------------------------
 // Auth / user schemas
-// ---------------------------------------------------------------------------
 
 const authUser: OpenAPIV3.SchemaObject = {
   type: 'object',
@@ -229,9 +227,7 @@ const searchResult: OpenAPIV3.SchemaObject = {
   },
 };
 
-// ---------------------------------------------------------------------------
 // Device / premium schemas
-// ---------------------------------------------------------------------------
 
 const heartbeatResult: OpenAPIV3.SchemaObject = {
   type: 'object',
