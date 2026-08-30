@@ -56,7 +56,9 @@ const createAdminAndToken = async () => {
 
 describe('POST /verify/heartbeat (real HTTP, real database)', () => {
   it('rejects an unauthenticated request with 401', async () => {
-    const res = await request(app).post('/verify/heartbeat').send({ device_fingerprint: 'fp_anything' });
+    const res = await request(app)
+      .post('/verify/heartbeat')
+      .send({ device_fingerprint: 'fp_anything' });
     expect(res.status).toBe(401);
   });
 

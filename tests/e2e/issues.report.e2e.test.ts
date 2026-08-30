@@ -139,7 +139,7 @@ describe('POST /resources/:id/report (real HTTP, real database)', () => {
 
     expect(notFound.status).toBe(404);
     expect(notFound.body.error.code).toBe('RESOURCE_NOT_FOUND');
-});
+  });
 
   it('rejects an invalid reason with a real 400 validation error', async () => {
     const { admin } = await createAdminAndToken();
@@ -160,7 +160,9 @@ describe('GET /admin/reports and POST /admin/reports/:id/resolve (real HTTP, rol
   it('rejects a student token on both endpoints with a real 403', async () => {
     const { token: studentToken } = await createStudentAndToken();
 
-    const listRes = await request(app).get('/admin/reports').set('Authorization', `Bearer ${studentToken}`);
+    const listRes = await request(app)
+      .get('/admin/reports')
+      .set('Authorization', `Bearer ${studentToken}`);
     expect(listRes.status).toBe(403);
     expect(listRes.body.error.code).toBe('ADMIN_ONLY');
 
@@ -202,13 +204,17 @@ describe('GET /admin/reports and POST /admin/reports/:id/resolve (real HTTP, rol
       .get('/admin/reports')
       .query({ status: 'pending' })
       .set('Authorization', `Bearer ${adminToken}`);
-    expect(listPendingAfter.body.reports.some((r: { id: number }) => r.id === reportId)).toBe(false);
+    expect(listPendingAfter.body.reports.some((r: { id: number }) => r.id === reportId)).toBe(
+      false,
+    );
 
     const listAddressedAfter = await request(app)
       .get('/admin/reports')
       .query({ status: 'addressed' })
       .set('Authorization', `Bearer ${adminToken}`);
-    expect(listAddressedAfter.body.reports.some((r: { id: number }) => r.id === reportId)).toBe(true);
+    expect(listAddressedAfter.body.reports.some((r: { id: number }) => r.id === reportId)).toBe(
+      true,
+    );
 
     // resolveReport also calls notificationsService.create for the
     // original reporter (issue_report_addressed) — confirm the real row
@@ -217,7 +223,7 @@ describe('GET /admin/reports and POST /admin/reports/:id/resolve (real HTTP, rol
       where: { userId: studentId, type: 'issue_report_addressed' },
     });
     expect(notification).not.toBeNull();
-});
+  });
 
   it('returns a real 404 REPORT_NOT_FOUND when resolving a nonexistent report', async () => {
     const { token: adminToken } = await createAdminAndToken();

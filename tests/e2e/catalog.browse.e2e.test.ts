@@ -76,15 +76,19 @@ const createAdminAndToken = async () => {
 
 describe('catalog admin CRUD role-gating (real HTTP, real Express app)', () => {
   it('rejects an unauthenticated request with 401, and a student token with 403', async () => {
-    const unauth = await request(app).post('/admin/streams').send({ name: uniqueName('stream') });
+    const unauth = await request(app)
+      .post('/admin/streams')
+      .send({ name: uniqueName('stream') });
     expect(unauth.status).toBe(401);
 
-    const signupRes = await request(app).post('/auth/signup').send({
-      name: 'E2E Test Student',
-      email: `${uniqueName('student')}@example.com`,
-      phone: uniquePhone(),
-      password: 'a-genuinely-long-enough-password-123',
-    });
+    const signupRes = await request(app)
+      .post('/auth/signup')
+      .send({
+        name: 'E2E Test Student',
+        email: `${uniqueName('student')}@example.com`,
+        phone: uniquePhone(),
+        password: 'a-genuinely-long-enough-password-123',
+      });
     createdUserIds.push(signupRes.body.user.id);
 
     const asStudent = await request(app)
@@ -173,9 +177,7 @@ describe('resource upload (real multer + real magic-byte validation)', () => {
 });
 
 describe('GET /courses/:id/resources access decisions (real HTTP, real access-policy)', () => {
-    it(
-    'walks all four decideAccess outcomes end to end over real HTTP',
-    async () => {
+  it('walks all four decideAccess outcomes end to end over real HTTP', async () => {
     const { token: adminToken } = await createAdminAndToken();
 
     const stream = await prisma.stream.create({ data: { name: uniqueName('stream') } });
@@ -236,8 +238,12 @@ describe('GET /courses/:id/resources access decisions (real HTTP, real access-po
       .set('Authorization', `Bearer ${studentToken}`);
 
     expect(beforePremium.status).toBe(200);
-    const freeView = beforePremium.body.resources.find((r: { id: number }) => r.id === freeSample.body.id);
-    const lockedView = beforePremium.body.resources.find((r: { id: number }) => r.id === premiumOnly.body.id);
+    const freeView = beforePremium.body.resources.find(
+      (r: { id: number }) => r.id === freeSample.body.id,
+    );
+    const lockedView = beforePremium.body.resources.find(
+      (r: { id: number }) => r.id === premiumOnly.body.id,
+    );
 
     expect(freeView.locked).toBe(false);
     expect(freeView.file_url).toEqual(expect.any(String));
@@ -291,7 +297,5 @@ describe('GET /courses/:id/resources access decisions (real HTTP, real access-po
     expect(mismatchView.locked).toBe(true);
     expect(mismatchView.reason_code).toBe('device_mismatch');
     expect(mismatchView.file_url).toBeUndefined();
-    },
-    90_000,
-  );
+  }, 90_000);
 });

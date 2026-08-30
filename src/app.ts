@@ -1,4 +1,6 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import { openapiDocument } from './config/swagger/document';
 import { authRouter } from './modules/auth/auth.routes';
 import { deviceRouter } from './modules/device/device.routes';
 import { notificationsRouter } from './modules/notifications/notifications.routes';
@@ -15,6 +17,13 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
+app.use(
+  '/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(openapiDocument, {
+    customSiteTitle: 'AASTU Gibi Gubae — API Docs',
+  }),
+);
 // Every module router bakes in its own full absolute paths (e.g.
 // '/auth/login', '/verify/heartbeat') rather than relative ones — so
 // every router mounts here the same uniform way, no per-module prefix.
