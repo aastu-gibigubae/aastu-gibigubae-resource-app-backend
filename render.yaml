@@ -1,20 +1,19 @@
 services:
   - type: web
-    name: aastu-gibigubae-resource-app-backend
+    name: resource-app
     runtime: node
     plan: free
     region: frankfurt
     branch: main
-    buildCommand: npm ci && npm run prisma:generate && npm run build
+    buildCommand: npm ci --include=dev && npm run prisma:generate && npm run build
     startCommand: npx prisma migrate deploy && node dist/server.js
     healthCheckPath: /health
     autoDeployTrigger: commit
     envVars:
       - key: NODE_ENV
         value: production
-
       - key: DATABASE_URL
-        sync: false # set  Neon production connection string in the Render dashboard
+        sync: false
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
