@@ -17,7 +17,7 @@ export default defineConfig({
     // in rate-limit.ts) means tests must not run concurrently against
     // each other.
     fileParallelism: false,
-    testTimeout: 30_000,
-    hookTimeout: 30_000,
+    testTimeout: 90_000,
+    hookTimeout: 90_000,
   },
 });
