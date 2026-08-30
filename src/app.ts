@@ -25,7 +25,6 @@ app.use(
   }),
 );
 
-
 app.get('/', (_req, res) => {
   res.redirect('/docs');
 });
@@ -36,7 +35,6 @@ app.use(notificationsRouter);
 app.use(catalogRouter);
 app.use(issuesRouter);
 app.use(premiumRouter);
-
 
 app.use(errorHandler);
 
