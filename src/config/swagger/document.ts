@@ -12,8 +12,8 @@ import { premiumPaths } from './paths/premium.paths';
 const servers: OpenAPIV3.ServerObject[] = [
   { url: `http://localhost:${env.PORT}`, description: 'Local development' },
   {
-    url: 'https://your-service.onrender.com',
-    description: 'Production (replace with your deployed host)',
+    url: 'https://resource-app.onrender.com',
+    description: 'Production',
   },
 ];
 

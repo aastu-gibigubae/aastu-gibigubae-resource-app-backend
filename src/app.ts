@@ -18,7 +18,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use(
-  '/docs',
+  '/',
   swaggerUi.serve,
   swaggerUi.setup(openapiDocument, {
     customSiteTitle: 'AASTU Gibi Gubae — API Docs',
