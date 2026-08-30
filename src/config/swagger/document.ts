@@ -12,7 +12,7 @@ import { premiumPaths } from './paths/premium.paths';
 const servers: OpenAPIV3.ServerObject[] = [
   { url: `http://localhost:${env.PORT}`, description: 'Local development' },
   {
-    url: 'https://resource-app-dxqv.onrender.com',
+    url: 'https://resource-app-h7e9.onrender.com',
     description: 'Production',
   },
 ];

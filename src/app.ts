@@ -18,15 +18,18 @@ app.get('/health', (_req, res) => {
 });
 
 app.use(
-  '/',
+  '/docs',
   swaggerUi.serve,
   swaggerUi.setup(openapiDocument, {
     customSiteTitle: 'AASTU Gibi Gubae — API Docs',
   }),
 );
-// Every module router bakes in its own full absolute paths (e.g.
-// '/auth/login', '/verify/heartbeat') rather than relative ones — so
-// every router mounts here the same uniform way, no per-module prefix.
+
+
+app.get('/', (_req, res) => {
+  res.redirect('/docs');
+});
+
 app.use(authRouter);
 app.use(deviceRouter);
 app.use(notificationsRouter);
@@ -34,9 +37,7 @@ app.use(catalogRouter);
 app.use(issuesRouter);
 app.use(premiumRouter);
 
-// Must be mounted last, after every route — Express requires
-// error-handling middleware to be registered after everything it's
-// meant to catch errors from.
+
 app.use(errorHandler);
 
 export default app;
